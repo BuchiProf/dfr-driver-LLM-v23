@@ -1,12 +1,32 @@
 namespace pxsim.board {
+    // Fonction d'auto-démarrage qui s'exécute en arrière-plan pour injecter la carte
+    function autoInit() {
+        let runtimeObj = (pxsim as any).runtime;
+        let win = runtimeObj ? runtimeObj.window : null;
+        let doc = win ? win.document : null;
+        if (!doc) {
+            // Réessaie un peu plus tard si le DOM n'est pas encore prêt
+            setTimeout(autoInit, 500);
+            return;
+        }
+
+        // Recherche du conteneur dans le simulateur MakeCode
+        let simContainer = doc.getElementById("sidediv") || doc.querySelector(".simPane");
+        if (!simContainer) {
+            setTimeout(autoInit, 500);
+            return;
+        }
+
+        initSimVisuals();
+    }
+
     export function initSimVisuals() {
-        // Récupération sécurisée sans utiliser le mot-clé global 'document' ni 'window'
         let runtimeObj = (pxsim as any).runtime;
         let win = runtimeObj ? runtimeObj.window : null;
         let doc = win ? win.document : null;
         if (!doc) return;
 
-        let simContainer = doc.getElementById("sidediv");
+        let simContainer = doc.getElementById("sidediv") || doc.querySelector(".simPane");
         if (!simContainer) return;
 
         let wrapper = doc.getElementById("motor-sim-card");
@@ -17,6 +37,7 @@ namespace pxsim.board {
             wrapper.style.marginTop = "10px";
             wrapper.style.position = "relative";
             wrapper.style.display = "inline-block";
+            wrapper.style.zIndex = "10";
 
             // Image de la carte moteur (carte-moteur.png)
             let img = doc.createElement("img");
@@ -76,4 +97,7 @@ namespace pxsim.board {
             }
         }
     }
+
+    // Lancer la vérification dès que le script de simulation est chargé
+    setTimeout(autoInit, 1000);
 }
