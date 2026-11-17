@@ -10,6 +10,7 @@
     "files": [
         "README.md",
         "main.ts",
+        "sim.ts",
         "icon.png",
         "carte-moteur.png",
         "_locales/fr/motor-strings.json"
