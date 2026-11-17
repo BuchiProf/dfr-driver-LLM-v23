@@ -1,11 +1,15 @@
 namespace pxsim.board {
     export function initSimVisuals() {
-        let simContainer = pxsim.document.getElementById("sidediv");
+        let win = window as any;
+        let doc = win.document;
+        if (!doc) return;
+
+        let simContainer = doc.getElementById("sidediv");
         if (!simContainer) return;
 
-        let wrapper = pxsim.document.getElementById("motor-sim-card");
+        let wrapper = doc.getElementById("motor-sim-card");
         if (!wrapper) {
-            wrapper = pxsim.document.createElement("div");
+            wrapper = doc.createElement("div");
             wrapper.id = "motor-sim-card";
             wrapper.style.textAlign = "center";
             wrapper.style.marginTop = "10px";
@@ -13,7 +17,7 @@ namespace pxsim.board {
             wrapper.style.display = "inline-block";
 
             // Image de la carte moteur (carte-moteur.png)
-            let img = pxsim.document.createElement("img");
+            let img = doc.createElement("img");
             img.src = "./carte-moteur.png";
             img.style.width = "450px";
             img.style.borderRadius = "8px";
@@ -21,24 +25,24 @@ namespace pxsim.board {
 
             // Création des 8 voyants DEL selon vos coordonnées exactes :
             // M4
-            createLed(wrapper, "led_m4_fwd", "35px", "90px");
-            createLed(wrapper, "led_m4_rev", "35px", "130px");
+            createLed(doc, wrapper, "led_m4_fwd", "35px", "90px");
+            createLed(doc, wrapper, "led_m4_rev", "35px", "130px");
             // M3
-            createLed(wrapper, "led_m3_fwd", "35px", "172px");
-            createLed(wrapper, "led_m3_rev", "35px", "212px");
+            createLed(doc, wrapper, "led_m3_fwd", "35px", "172px");
+            createLed(doc, wrapper, "led_m3_rev", "35px", "212px");
             // M2
-            createLed(wrapper, "led_m2_fwd", "35px", "253px");
-            createLed(wrapper, "led_m2_rev", "35px", "294px");
+            createLed(doc, wrapper, "led_m2_fwd", "35px", "253px");
+            createLed(doc, wrapper, "led_m2_rev", "35px", "294px");
             // M1
-            createLed(wrapper, "led_m1_fwd", "35px", "334px");
-            createLed(wrapper, "led_m1_rev", "35px", "375px");
+            createLed(doc, wrapper, "led_m1_fwd", "35px", "334px");
+            createLed(doc, wrapper, "led_m1_rev", "35px", "375px");
 
             simContainer.appendChild(wrapper);
         }
     }
 
-    function createLed(parent: HTMLElement, id: string, top: string, left: string) {
-        let led = pxsim.document.createElement("div");
+    function createLed(doc: any, parent: any, id: string, top: string, left: string) {
+        let led = doc.createElement("div");
         led.id = id;
         led.style.position = "absolute";
         led.style.top = top;
@@ -53,7 +57,11 @@ namespace pxsim.board {
     }
 
     export function setLedState(ledId: string, state: boolean, isReverse: boolean = false) {
-        let led = pxsim.document.getElementById(ledId);
+        let win = window as any;
+        let doc = win.document;
+        if (!doc) return;
+
+        let led = doc.getElementById(ledId);
         if (led) {
             if (state) {
                 // Vert pour le sens avant, Rouge pour le sens arrière
