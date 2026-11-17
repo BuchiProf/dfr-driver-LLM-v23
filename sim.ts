@@ -1,19 +1,19 @@
 namespace pxsim.board {
-    // Fonction d'auto-démarrage qui s'exécute en arrière-plan pour injecter la carte
+    // Fonction d'auto-démarrage sécurisée
     function autoInit() {
         let runtimeObj = (pxsim as any).runtime;
         let win = runtimeObj ? runtimeObj.window : null;
         let doc = win ? win.document : null;
-        if (!doc) {
-            // Réessaie un peu plus tard si le DOM n'est pas encore prêt
-            setTimeout(autoInit, 500);
+        
+        if (!doc || !win) {
             return;
         }
 
         // Recherche du conteneur dans le simulateur MakeCode
         let simContainer = doc.getElementById("sidediv") || doc.querySelector(".simPane");
         if (!simContainer) {
-            setTimeout(autoInit, 500);
+            // Utilisation de win.setTimeout au lieu de setTimeout
+            win.setTimeout(() => autoInit(), 500);
             return;
         }
 
@@ -98,6 +98,6 @@ namespace pxsim.board {
         }
     }
 
-    // Lancer la vérification dès que le script de simulation est chargé
-    setTimeout(autoInit, 1000);
+    // Lancement de l'initialisation
+    autoInit();
 }
