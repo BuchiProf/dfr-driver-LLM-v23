@@ -1,11 +1,8 @@
 namespace pxsim.board {
-    // Cette fonction s'exécute dans le navigateur pour dessiner l'interface du simulateur
     export function initSimVisuals() {
-        // Recherche du conteneur du simulateur MakeCode
         let simContainer = document.getElementById("sidediv");
         if (!simContainer) return;
 
-        // Création d'un bloc conteneur pour la carte moteur sous micro:bit
         let wrapper = document.getElementById("motor-sim-card");
         if (!wrapper) {
             wrapper = document.createElement("div");
@@ -15,42 +12,57 @@ namespace pxsim.board {
             wrapper.style.position = "relative";
             wrapper.style.display = "inline-block";
 
-            // Insertion de l'image de la carte moteur
+            // Image de la carte moteur (assurez-vous qu'elle s'appelle carte-moteur.png)
             let img = document.createElement("img");
-            img.src = "./carte-moteur.png"; // Nom du fichier image dans le dépôt
-            img.style.width = "180px"; // Ajustez la taille selon vos besoins
+            img.src = "./carte-moteur.png";
+            img.style.width = "450px"; // Ajustez selon la taille réelle de votre image
             img.style.borderRadius = "8px";
             wrapper.appendChild(img);
 
-            // Création des voyants DEL superposés (ex: pour M1 et M2)
-            // Vous pouvez dupliquer et positionner chaque DEL en CSS (top/left)
-            createLed(wrapper, "led_m1_fwd", "50px", "30px"); // Coordonnées sur l'image
-            createLed(wrapper, "led_m1_rev", "50px", "50px");
+            // Création des 8 voyants DEL selon vos coordonnées exactes
+            // M4
+            createLed(wrapper, "led_m4_fwd", "35px", "90px");
+            createLed(wrapper, "led_m4_rev", "35px", "130px");
+            // M3
+            createLed(wrapper, "led_m3_fwd", "35px", "172px");
+            createLed(wrapper, "led_m3_rev", "35px", "212px");
+            // M2
+            createLed(wrapper, "led_m2_fwd", "35px", "253px");
+            createLed(wrapper, "led_m2_rev", "35px", "294px");
+            // M1
+            createLed(wrapper, "led_m1_fwd", "35px", "334px");
+            createLed(wrapper, "led_m1_rev", "35px", "375px");
 
             simContainer.appendChild(wrapper);
         }
     }
 
-    functionatiques(parent: HTMLElement, id: string, top: string, left: string) {
+    function createLed(parent: HTMLElement, id: string, top: string, left: string) {
         let led = document.createElement("div");
         led.id = id;
         led.style.position = "absolute";
         led.style.top = top;
         led.style.left = left;
-        led.style.width = "12px";
-        led.style.height = "12px";
+        led.style.width = "10px";
+        led.style.height = "10px";
         led.style.borderRadius = "50%";
-        led.style.backgroundColor = "#555"; // Éteint par défaut (gris)
+        led.style.backgroundColor = "#444"; // Éteint par défaut (gris foncé)
         led.style.border = "1px solid #fff";
+        led.style.boxShadow = "inset 0 0 2px rgba(0,0,0,0.5)";
         parent.appendChild(led);
     }
 
-    // Fonction appelée par vos blocs pour allumer ou éteindre une DEL visuelle
-    export function setLedState(ledId: string, state: boolean) {
+    export function setLedState(ledId: string, state: boolean, isReverse: boolean = false) {
         let led = document.getElementById(ledId);
         if (led) {
-            led.style.backgroundColor = state ? "#00FF00" : "#555"; // Vert si actif, gris si éteint
-            led.style.boxShadow = state ? "0 0 8px #00FF00" : "none"; // Effet lumineux
+            if (state) {
+                // Vert pour le sens avant, Rouge pour le sens arrière
+                led.style.backgroundColor = isReverse ? "#FF3B30" : "#34C759";
+                led.style.boxShadow = isReverse ? "0 0 8px #FF3B30" : "0 0 8px #34C759";
+            } else {
+                led.style.backgroundColor = "#444";
+                led.style.boxShadow = "inset 0 0 2px rgba(0,0,0,0.5)";
+            }
         }
     }
 }
