@@ -13,6 +13,8 @@
  * @date    2018-03-20
  */
 
+declare const pxsim: any;
+
 /**
  *This is DFRobot:motor user motor and steering control function.
  */
@@ -45,7 +47,6 @@ namespace motor {
 
     const STP_CHD_L = 3071
     const STP_CHD_H = 1023
-
 
     const BYG_CHA_L = 3071
     const BYG_CHA_H = 1023
@@ -111,8 +112,6 @@ namespace motor {
         M3_M4 = 0x2
     }
 
-
-
     let initialized = false
 
     function i2cWrite(addr: number, reg: number, value: number) {
@@ -168,7 +167,6 @@ namespace motor {
         pins.i2cWriteBuffer(PCA9685_ADDRESS, buf);
     }
 
-
     function setStepper_28(index: number, dir: boolean): void {
         if (index == 1) {
             if (dir) {
@@ -197,7 +195,6 @@ namespace motor {
         }
     }
 
-
     function setStepper_42(index: number, dir: boolean): void {
         if (index == 1) {
             if (dir) {
@@ -225,7 +222,6 @@ namespace motor {
             }
         }
     }
-
 
     /**
      * Steering gear control function.
@@ -282,12 +278,13 @@ namespace motor {
         }
 
         // Mise à jour visuelle sécurisée pour le simulateur
-        control.runInBackground(() => {
+        if (typeof pxsim !== "undefined" && (pxsim as any).board && (pxsim as any).board.setLedState) {
             let fwd = speed > 0;
             let rev = speed < 0;
-            console.log("Moteur " + index + " vitesse: " + speed);
-        });
-    } // <-- Accolade fermante de la fonction MotorRun ajoutée ici
+            (pxsim as any).board.setLedState("led_m" + index + "_fwd", fwd, false);
+            (pxsim as any).board.setLedState("led_m" + index + "_rev", rev, true);
+        }
+    }
 
     /**
      * Execute a 42BYGH1861A-C step motor(Degree).
@@ -494,6 +491,12 @@ namespace motor {
     export function motorStop(index: Motors) {
         setPwm((4 - index) * 2, 0, 0);
         setPwm((4 - index) * 2 + 1, 0, 0);
+
+        // Éteindre les voyants dans le simulateur
+        if (typeof pxsim !== "undefined" && (pxsim as any).board && (pxsim as any).board.setLedState) {
+            (pxsim as any).board.setLedState("led_m" + index + "_fwd", false, false);
+            (pxsim as any).board.setLedState("led_m" + index + "_rev", false, true);
+        }
     }
 
     /**
@@ -507,4 +510,4 @@ namespace motor {
             motorStop(idx);
         }
     }
-} // <-- Accolade fermante du namespace motor ajoutée ici
+}
