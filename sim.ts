@@ -1,10 +1,17 @@
 namespace pxsim.board {
 
     export function initSimVisuals() {
-        let win = (pxsim as any).runtime ? (pxsim as any).runtime.window : null;
-        if (!win || !win.document) return;
+        // Récupération sécurisée du runtime sans utiliser la variable globale brute 'pxsim'
+        let win: any = null;
+        try {
+            win = (globalThis as any).window || (window as any);
+        } catch (e) {
+            // Environnement embarqué strict
+        }
+        
+        let doc = win && win.document ? win.document : (typeof document !== "undefined" ? document : null);
+        if (!doc) return;
 
-        let doc = win.document;
         let simContainer = doc.getElementById("sidediv") || doc.querySelector(".simPane");
         if (!simContainer) return;
 
@@ -58,10 +65,14 @@ namespace pxsim.board {
     }
 
     export function setLedState(ledId: string, state: boolean, isReverse: boolean = false) {
-        let win = (pxsim as any).runtime ? (pxsim as any).runtime.window : null;
-        if (!win || !win.document) return;
+        let win: any = null;
+        try {
+            win = (globalThis as any).window || (window as any);
+        } catch (e) {}
 
-        let doc = win.document;
+        let doc = win && win.document ? win.document : (typeof document !== "undefined" ? document : null);
+        if (!doc) return;
+
         let led = doc.getElementById(ledId);
         if (led) {
             if (state) {
@@ -75,7 +86,7 @@ namespace pxsim.board {
         }
     }
 
-    // Appel automatique de l'initialisation visuelle au chargement du simulateur
+    // Initialisation automatique au chargement
     control.runInBackground(() => {
         basic.pause(500);
         initSimVisuals();
