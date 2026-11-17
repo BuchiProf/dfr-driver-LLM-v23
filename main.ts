@@ -3,14 +3,14 @@
  * @brief DFRobot's microbit motor drive makecode library.
  * @n [Get the module here](http://www.dfrobot.com.cn/goods-1577.html)
  * @n This is the microbit special motor drive library, which realizes control 
- *    of the eight-channel steering gear, two-step motor and four-way dc motor.
+ *   of the eight-channel steering gear, two-step motor and four-way dc motor.
  *
- * @copyright	[DFRobot](http://www.dfrobot.com), 2016
- * @copyright	GNU Lesser General Public License
+ * @copyright    [DFRobot](http://www.dfrobot.com), 2016
+ * @copyright    GNU Lesser General Public License
  *
  * @author [email](1035868977@qq.com)
- * @version  V1.0.1
- * @date  2018-03-20
+ * @version    V1.0.2
+ * @date   2018-03-20
  */
 
 /**
@@ -97,9 +97,9 @@ namespace motor {
      * The user defines the motor rotation direction.
      */
     export enum Dir {
-        //% blockId="CW" block="CW"
+        //% blockId="CW" block="Sens horaire"
         CW = 1,
-        //% blockId="CCW" block="CCW"
+        //% blockId="CCW" block="Sens antihoraire"
         CCW = -1,
     }
 
@@ -141,16 +141,15 @@ namespace motor {
     }
 
     function setFreq(freq: number): void {
-        // Constrain the frequency
         let prescaleval = 25000000;
         prescaleval /= 4096;
         prescaleval /= freq;
         prescaleval -= 1;
-        let prescale = prescaleval;//Math.floor(prescaleval + 0.5);
+        let prescale = prescaleval;
         let oldmode = i2cRead(PCA9685_ADDRESS, MODE1);
-        let newmode = (oldmode & 0x7F) | 0x10; // sleep
-        i2cWrite(PCA9685_ADDRESS, MODE1, newmode); // go to sleep
-        i2cWrite(PCA9685_ADDRESS, PRESCALE, prescale); // set the prescaler
+        let newmode = (oldmode & 0x7F) | 0x10;
+        i2cWrite(PCA9685_ADDRESS, MODE1, newmode);
+        i2cWrite(PCA9685_ADDRESS, PRESCALE, prescale);
         i2cWrite(PCA9685_ADDRESS, MODE1, oldmode);
         control.waitMicros(5000);
         i2cWrite(PCA9685_ADDRESS, MODE1, oldmode | 0xa1);
@@ -229,11 +228,9 @@ namespace motor {
 
 
     /**
-	 * Steering gear control function.
-     * S1~S8.
-     * 0°~180°.
-	*/
-    //% blockId=motor_servo block="Servo|%index|degree|%degree"
+     * Steering gear control function.
+     */
+    //% blockId=motor_servo block="Servomoteur|%index|angle|%degree"
     //% weight=100
     //% degree.min=0 degree.max=180
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=4
@@ -241,26 +238,23 @@ namespace motor {
         if (!initialized) {
             initPCA9685()
         }
-        // 50hz
-        let v_us = (degree * 1800 / 180 + 600) // 0.6ms ~ 2.4ms
+        let v_us = (degree * 1800 / 180 + 600)
         let value = v_us * 4096 / 20000
         setPwm(index + 7, 0, value)
     }
 
     export function servoOff(index: Servos, degree: number): void {
-	if (!initialized) {
+        if (!initialized) {
             initPCA9685()
         }
-	setPwm(index + 7, 0, 0)
+        setPwm(index + 7, 0, 0)
     }
 
     /**
-	 * Execute a motor
-     * M1~M4.
-     * speed(0~255).
-    */
+     * Execute a motor
+     */
     //% weight=90
-    //% blockId=motor_MotorRun block="Motor|%index|dir|%Dir|speed|%speed"
+    //% blockId=motor_MotorRun block="Moteur|%index|sens|%direction|vitesse|%speed"
     //% speed.min=0 speed.max=255
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
@@ -268,7 +262,7 @@ namespace motor {
         if (!initialized) {
             initPCA9685()
         }
-        speed = speed * 16 * direction; // map 255 to 4096
+        speed = speed * 16 * direction;
         if (speed >= 4096) {
             speed = 4095
         }
@@ -289,26 +283,22 @@ namespace motor {
     }
 
     /**
-	 * Execute a 42BYGH1861A-C step motor(Degree).
-     * M1_M2/M3_M4.
-    */
+     * Execute a 42BYGH1861A-C step motor(Degree).
+     */
     //% weight=80
-    //% blockId=motor_stepperDegree_42 block="Stepper 42|%index|dir|%direction|degree|%degree"
+    //% blockId=motor_stepperDegree_42 block="Pas à pas 42|%index|sens|%direction|angle|%degree"
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
     export function stepperDegree_42(index: Steppers, direction: Dir, degree: number): void {
         if (!initialized) {
             initPCA9685()
         }
-        // let Degree = Math.abs(degree);
-        // Degree = Degree * direction;
-        //setFreq(100);
         setStepper_42(index, direction > 0);
         if (degree == 0) {
             return;
         }
         let Degree = Math.abs(degree);
-        basic.pause((50000 * Degree) / (360 * 100));  //100hz
+        basic.pause((50000 * Degree) / (360 * 100));
         if (index == 1) {
             motorStop(1)
             motorStop(2)
@@ -316,15 +306,13 @@ namespace motor {
             motorStop(3)
             motorStop(4)
         }
-        //setFreq(50);
     }
 
     /**
-	 * Execute a 42BYGH1861A-C step motor(Turn).
-     * M1_M2/M3_M4.
-    */
+     * Execute a 42BYGH1861A-C step motor(Turn).
+     */
     //% weight=70
-    //% blockId=motor_stepperTurn_42 block="Stepper 42|%index|dir|%direction|turn|%turn"
+    //% blockId=motor_stepperTurn_42 block="Pas à pas 42|%index|sens|%direction|tours|%turn"
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
     export function stepperTurn_42(index: Steppers, direction: Dir, turn: number): void {
@@ -336,11 +324,10 @@ namespace motor {
     }
 
     /**
-	 * Execute a 28BYJ-48 step motor(Degree).
-     * M1_M2/M3_M4.
-    */
+     * Execute a 28BYJ-48 step motor(Degree).
+     */
     //% weight=60
-    //% blockId=motor_stepperDegree_28 block="Stepper 28|%index|dir|%direction|degree|%degree"
+    //% blockId=motor_stepperDegree_28 block="Pas à pas 28|%index|sens|%direction|angle|%degree"
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
     export function stepperDegree_28(index: Steppers, direction: Dir, degree: number): void {
@@ -352,7 +339,6 @@ namespace motor {
         }
         let Degree = Math.abs(degree);
         Degree = Degree * direction;
-        //setFreq(100);
         setStepper_28(index, Degree > 0);
         Degree = Math.abs(Degree);
         basic.pause((1000 * Degree) / 360);
@@ -363,15 +349,13 @@ namespace motor {
             motorStop(3)
             motorStop(4)
         }
-        //setFreq(50);
     }
 
     /**
-	 * Execute a 28BYJ-48 step motor(Turn).
-     * M1_M2/M3_M4.
-    */
+     * Execute a 28BYJ-48 step motor(Turn).
+     */
     //% weight=50
-    //% blockId=motor_stepperTurn_28 block="Stepper 28|%index|dir|%direction|turn|%turn"
+    //% blockId=motor_stepperTurn_28 block="Pas à pas 28|%index|sens|%direction|tours|%turn"
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
     export function stepperTurn_28(index: Steppers, direction: Dir, turn: number): void {
@@ -383,10 +367,10 @@ namespace motor {
     }
 
     /**
-	 * Two parallel stepper motors are executed simultaneously(DegreeDual).
-    */
+     * Two parallel stepper motors are executed simultaneously(DegreeDual).
+     */
     //% weight=40
-    //% blockId=motor_stepperDegreeDual_42 block="Dual Stepper %stepper|M1_M2 dir %direction1|degree %degree1|M3_M4 dir %direction2|degree %degree2"
+    //% blockId=motor_stepperDegreeDual_42 block="Double pas à pas %stepper|M1_M2 sens %direction1|angle %degree1|M3_M4 sens %direction2|angle %degree2"
     //% stepper.fieldEditor="gridpicker" stepper.fieldOptions.columns=2
     //% direction1.fieldEditor="gridpicker" direction1.fieldOptions.columns=2
     //% direction2.fieldEditor="gridpicker" direction2.fieldOptions.columns=2
@@ -399,7 +383,7 @@ namespace motor {
         let Degree1 = Math.abs(degree1);
         let Degree2 = Math.abs(degree2);
 
-        if (stepper == 1) {  // 42 stepper
+        if (stepper == 1) {
             if (Degree1 == 0 && Degree2 == 0) {
                 setStepper_42(0x01, direction1 > 0);
                 setStepper_42(0x02, direction2 > 0);
@@ -469,16 +453,14 @@ namespace motor {
                 basic.pause(timeout2);
                 motorStop(1); motorStop(2);
             }
-        } else {
-            //
         }
     }
 
     /**
-	 * Two parallel stepper motors are executed simultaneously(Turn).
-    */
+     * Two parallel stepper motors are executed simultaneously(Turn).
+     */
     //% weight=30
-    //% blockId=motor_stepperTurnDual_42 block="Dual Stepper %stepper|M1_M2 dir %direction1|trun %trun1|M3_M4 dir %direction2|trun %trun2"
+    //% blockId=motor_stepperTurnDual_42 block="Double pas à pas %stepper|M1_M2 sens %direction1|tours %trun1|M3_M4 sens %direction2|tours %trun2"
     //% stepper.fieldEditor="gridpicker" stepper.fieldOptions.columns=2
     //% direction1.fieldEditor="gridpicker" direction1.fieldOptions.columns=2
     //% direction2.fieldEditor="gridpicker" direction2.fieldOptions.columns=2
@@ -493,17 +475,14 @@ namespace motor {
             stepperDegreeDual_42(stepper, direction1, degree1, direction2, degree2);
         } else if (stepper == 2) {
             stepperDegreeDual_42(stepper, direction1, degree1, direction2, degree2);
-        } else {
-
         }
-
     }
 
     /**
-	 * Stop the dc motor.
-    */
+     * Stop the dc motor.
+     */
     //% weight=20
-    //% blockId=motor_motorStop block="Motor stop|%index"
+    //% blockId=motor_motorStop block="Arrêter le moteur|%index"
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2 
     export function motorStop(index: Motors) {
         setPwm((4 - index) * 2, 0, 0);
@@ -511,14 +490,13 @@ namespace motor {
     }
 
     /**
-	 * Stop all motors
-    */
+     * Stop all motors
+     */
     //% weight=10
-    //% blockId=motor_motorStopAll block="Motor Stop All"
+    //% blockId=motor_motorStopAll block="Arrêter tous les moteurs"
     export function motorStopAll(): void {
         for (let idx = 1; idx <= 4; idx++) {
             motorStop(idx);
         }
     }
 }
-
