@@ -1,7 +1,7 @@
 namespace pxsim.board {
     export function initSimVisuals() {
-        let win = window as any;
-        let doc = win.document;
+        // Accès sécurisé au document du navigateur via le contexte global de MakeCode
+        let doc = (pxsim as any).document || (globalThis as any).document;
         if (!doc) return;
 
         let simContainer = doc.getElementById("sidediv");
@@ -57,8 +57,7 @@ namespace pxsim.board {
     }
 
     export function setLedState(ledId: string, state: boolean, isReverse: boolean = false) {
-        let win = window as any;
-        let doc = win.document;
+        let doc = (pxsim as any).document || (globalThis as any).document;
         if (!doc) return;
 
         let led = doc.getElementById(ledId);
