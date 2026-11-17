@@ -1,20 +1,17 @@
+// Déclarations pour indiquer au compilateur MakeCode que l'environnement du navigateur est disponible
+declare var document: any;
+declare var window: any;
+
 namespace pxsim.board {
 
     export function initSimVisuals() {
-        // Récupération sécurisée du runtime sans utiliser la variable globale brute 'pxsim'
-        let win: any = null;
-        try {
-            win = (globalThis as any).window || (window as any);
-        } catch (e) {
-            // Environnement embarqué strict
-        }
-        
-        let doc = win && win.document ? win.document : (typeof document !== "undefined" ? document : null);
+        let doc = (typeof document !== "undefined") ? document : (window && window.document ? window.document : null);
         if (!doc) return;
 
         let simContainer = doc.getElementById("sidediv") || doc.querySelector(".simPane");
         if (!simContainer) return;
 
+        // Évite de dupliquer si le simulateur se recharge
         if (doc.getElementById("motor-sim-card")) return;
 
         let wrapper = doc.createElement("div");
@@ -32,7 +29,7 @@ namespace pxsim.board {
         img.style.borderRadius = "8px";
         wrapper.appendChild(img);
 
-        // Création des 8 voyants DEL (coordonnées exactes)
+        // Création des 8 voyants DEL (coordonnées exactes des 4 moteurs)
         // M4
         createLed(doc, wrapper, "led_m4_fwd", "35px", "90px");
         createLed(doc, wrapper, "led_m4_rev", "35px", "130px");
@@ -65,18 +62,13 @@ namespace pxsim.board {
     }
 
     export function setLedState(ledId: string, state: boolean, isReverse: boolean = false) {
-        let win: any = null;
-        try {
-            win = (globalThis as any).window || (window as any);
-        } catch (e) {}
-
-        let doc = win && win.document ? win.document : (typeof document !== "undefined" ? document : null);
+        let doc = (typeof document !== "undefined") ? document : (window && window.document ? window.document : null);
         if (!doc) return;
 
         let led = doc.getElementById(ledId);
         if (led) {
             if (state) {
-                // Vert pour le sens avant, Rouge pour le sens arrière
+                // Vert pour le sens avant (#34C759), Rouge pour le sens arrière (#FF3B30)
                 led.style.backgroundColor = isReverse ? "#FF3B30" : "#34C759";
                 led.style.boxShadow = isReverse ? "0 0 8px #FF3B30" : "0 0 8px #34C759";
             } else {
@@ -86,7 +78,7 @@ namespace pxsim.board {
         }
     }
 
-    // Initialisation automatique au chargement
+    // Initialisation automatique de l'affichage au démarrage du simulateur
     control.runInBackground(() => {
         basic.pause(500);
         initSimVisuals();
