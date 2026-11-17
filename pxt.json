@@ -1,6 +1,6 @@
 {
-    "name": "Carte-moteur-v12",
-    "version": "2.0.12",
+    "name": "Carte-moteur-v13",
+    "version": "2.0.13",
     "description": "La carte moteur DFROBOT pour microbit.",
     "icon": "icon.png",
     "license": "GNU",
