@@ -281,13 +281,16 @@ namespace motor {
             setPwm(pn, 0, -speed)
         }
 
-        // Mise à jour des voyants DEL dans le simulateur graphique (si disponible)
-        if (typeof pxsim !== "undefined" && (pxsim as any).board) {
+        // Mise à jour visuelle sécurisée pour le simulateur
+        if (typeof pxsim !== "undefined") {
             let fwd = speed > 0;
             let rev = speed < 0;
-            (pxsim as any).board.setLedState("led_m" + index + "_fwd", fwd);
-            (pxsim as any).board.setLedState("led_m" + index + "_rev", rev);
-        }
+            // Appel via l'espace global du simulateur
+            let boardSim = (pxsim as any).board;
+            if (boardSim && boardSim.setLedState) {
+                boardSim.setLedState("led_m" + index + "_fwd", fwd, false);
+                boardSim.setLedState("led_m" + index + "_rev", rev, true);
+            }
     }
 
     /**
