@@ -1,25 +1,25 @@
 namespace pxsim.board {
     export function initSimVisuals() {
-        let simContainer = document.getElementById("sidediv");
+        let simContainer = pxsim.document.getElementById("sidediv");
         if (!simContainer) return;
 
-        let wrapper = document.getElementById("motor-sim-card");
+        let wrapper = pxsim.document.getElementById("motor-sim-card");
         if (!wrapper) {
-            wrapper = document.createElement("div");
+            wrapper = pxsim.document.createElement("div");
             wrapper.id = "motor-sim-card";
             wrapper.style.textAlign = "center";
             wrapper.style.marginTop = "10px";
             wrapper.style.position = "relative";
             wrapper.style.display = "inline-block";
 
-            // Image de la carte moteur (assurez-vous qu'elle s'appelle carte-moteur.png)
-            let img = document.createElement("img");
+            // Image de la carte moteur (carte-moteur.png)
+            let img = pxsim.document.createElement("img");
             img.src = "./carte-moteur.png";
-            img.style.width = "450px"; // Ajustez selon la taille réelle de votre image
+            img.style.width = "450px";
             img.style.borderRadius = "8px";
             wrapper.appendChild(img);
 
-            // Création des 8 voyants DEL selon vos coordonnées exactes
+            // Création des 8 voyants DEL selon vos coordonnées exactes :
             // M4
             createLed(wrapper, "led_m4_fwd", "35px", "90px");
             createLed(wrapper, "led_m4_rev", "35px", "130px");
@@ -38,7 +38,7 @@ namespace pxsim.board {
     }
 
     function createLed(parent: HTMLElement, id: string, top: string, left: string) {
-        let led = document.createElement("div");
+        let led = pxsim.document.createElement("div");
         led.id = id;
         led.style.position = "absolute";
         led.style.top = top;
@@ -53,7 +53,7 @@ namespace pxsim.board {
     }
 
     export function setLedState(ledId: string, state: boolean, isReverse: boolean = false) {
-        let led = document.getElementById(ledId);
+        let led = pxsim.document.getElementById(ledId);
         if (led) {
             if (state) {
                 // Vert pour le sens avant, Rouge pour le sens arrière
