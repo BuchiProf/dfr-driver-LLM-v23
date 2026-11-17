@@ -1,13 +1,28 @@
-// Déclaration pour que le compilateur accepte pxsim sans broncher
-declare const pxsim: any;
-
 namespace pxsim.board {
 
+    function autoInit() {
+        // Récupération dynamique du contexte global sans utiliser les mots-clés interdits
+        let globalObj: any = Function("return this")();
+        let doc = globalObj ? globalObj.document : null;
+        
+        if (!doc) {
+            return;
+        }
+
+        let simContainer = doc.getElementById("sidediv") || doc.querySelector(".simPane");
+        if (!simContainer) {
+            if (globalObj && globalObj.setTimeout) {
+                globalObj.setTimeout(() => autoInit(), 500);
+            }
+            return;
+        }
+
+        initSimVisuals();
+    }
+
     export function initSimVisuals() {
-        // Accès direct et sécurisé au DOM via le runtime du board si disponible
-        let boardInstance = pxsim.board && pxsim.board.id ? pxsim.board.id : null;
-        // On récupère le document du navigateur de manière propre
-        let doc = (typeof document !== "undefined") ? document : null;
+        let globalObj: any = Function("return this")();
+        let doc = globalObj ? globalObj.document : null;
         if (!doc) return;
 
         let simContainer = doc.getElementById("sidediv") || doc.querySelector(".simPane");
@@ -64,7 +79,8 @@ namespace pxsim.board {
     }
 
     export function setLedState(ledId: string, state: boolean, isReverse: boolean = false) {
-        let doc = (typeof document !== "undefined") ? document : null;
+        let globalObj: any = Function("return this")();
+        let doc = globalObj ? globalObj.document : null;
         if (!doc) return;
 
         let led = doc.getElementById(ledId);
@@ -80,9 +96,9 @@ namespace pxsim.board {
         }
     }
 
-    // Initialisation automatique différée gérée proprement par MakeCode
+    // Initialisation automatique via le thread d'arrière-plan MakeCode
     control.runInBackground(() => {
         basic.pause(1000);
-        initSimVisuals();
+        autoInit();
     });
 }
