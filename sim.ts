@@ -1,84 +1,76 @@
-namespace pxsim {
-    // Définition de la carte simulée pour s'intégrer au moteur MakeCode
-    export class Board extends CoreBoard {
-        public element: SVGElement;
-        
-        constructor() {
-            super();
-            // Initialisation de la vue de la carte dans le simulateur
-            this.initVisuals();
-        }
+namespace pxsim.board {
+    // Variable pour mémoriser si la carte est déjà injectée
+    let cardInjected = false;
 
-        private initVisuals() {
-            // Utilisation du conteneur officiel du simulateur MakeCode
-            let container = document.getElementById("sidediv") || document.querySelector(".simPane");
-            if (!container) return;
+    export function initSimVisuals() {
+        // En environnement MakeCode sim, l'objet global du navigateur est accessible via runtime.window
+        let win = (pxsim as any).runtime ? (pxsim as any).runtime.window : null;
+        if (!win || !win.document) return;
 
-            // Évite les doublons si le simulateur redémarre
-            if (document.getElementById("motor-sim-card")) return;
+        let doc = win.document;
+        let simContainer = doc.getElementById("sidediv") || doc.querySelector(".simPane");
+        if (!simContainer) return;
 
-            let wrapper = document.createElement("div");
-            wrapper.id = "motor-sim-card";
-            wrapper.style.textAlign = "center";
-            wrapper.style.marginTop = "10px";
-            wrapper.style.position = "relative";
-            wrapper.style.display = "inline-block";
-            wrapper.style.zIndex = "10";
+        if (doc.getElementById("motor-sim-card")) return;
 
-            // Image de la carte moteur
-            let img = document.createElement("img");
-            img.src = "./carte-moteur.png";
-            img.style.width = "450px";
-            img.style.borderRadius = "8px";
-            wrapper.appendChild(img);
+        let wrapper = doc.createElement("div");
+        wrapper.id = "motor-sim-card";
+        wrapper.style.textAlign = "center";
+        wrapper.style.marginTop = "10px";
+        wrapper.style.position = "relative";
+        wrapper.style.display = "inline-block";
+        wrapper.style.zIndex = "10";
 
-            // Création des 8 voyants DEL (coordonnées exactes)
-            this.createLed(wrapper, "led_m4_fwd", "35px", "90px");
-            this.createLed(wrapper, "led_m4_rev", "35px", "130px");
-            this.createLed(wrapper, "led_m3_fwd", "35px", "172px");
-            this.createLed(wrapper, "led_m3_rev", "35px", "212px");
-            this.createLed(wrapper, "led_m2_fwd", "35px", "253px");
-            this.createLed(wrapper, "led_m2_rev", "35px", "294px");
-            this.createLed(wrapper, "led_m1_fwd", "35px", "334px");
-            this.createLed(wrapper, "led_m1_rev", "35px", "375px");
+        // Image de la carte moteur
+        let img = doc.createElement("img");
+        img.src = "./carte-moteur.png";
+        img.style.width = "450px";
+        img.style.borderRadius = "8px";
+        wrapper.appendChild(img);
 
-            container.appendChild(wrapper);
-        }
+        // Création des 8 voyants DEL (coordonnées exactes)
+        createLed(doc, wrapper, "led_m4_fwd", "35px", "90px");
+        createLed(doc, wrapper, "led_m4_rev", "35px", "130px");
+        createLed(doc, wrapper, "led_m3_fwd", "35px", "172px");
+        createLed(doc, wrapper, "led_m3_rev", "35px", "212px");
+        createLed(doc, wrapper, "led_m2_fwd", "35px", "253px");
+        createLed(doc, wrapper, "led_m2_rev", "35px", "294px");
+        createLed(doc, wrapper, "led_m1_fwd", "35px", "334px");
+        createLed(doc, wrapper, "led_m1_rev", "35px", "375px");
 
-        private createLed(parent: HTMLElement, id: string, top: string, left: string) {
-            let led = document.createElement("div");
-            led.id = id;
-            led.style.position = "absolute";
-            led.style.top = top;
-            led.style.left = left;
-            led.style.width = "10px";
-            led.style.height = "10px";
-            led.style.borderRadius = "50%";
-            led.style.backgroundColor = "#444";
-            led.style.border = "1px solid #fff";
-            led.style.boxShadow = "inset 0 0 2px rgba(0,0,0,0.5)";
-            parent.appendChild(led);
-        }
-
-        public updateLedState(ledId: string, state: boolean, isReverse: boolean = false) {
-            let led = document.getElementById(ledId);
-            if (led) {
-                if (state) {
-                    led.style.backgroundColor = isReverse ? "#FF3B30" : "#34C759";
-                    led.style.boxShadow = isReverse ? "0 0 8px #FF3B30" : "0 0 8px #34C759";
-                } else {
-                    led.style.backgroundColor = "#444";
-                    led.style.boxShadow = "inset 0 0 2px rgba(0,0,0,0.5)";
-                }
-            }
-        }
+        simContainer.appendChild(wrapper);
+        cardInjected = true;
     }
 
-    // Fonction globale appelée par main.ts pour mettre à jour les DEL
+    function createLed(doc: any, parent: any, id: string, top: string, left: string) {
+        let led = doc.createElement("div");
+        led.id = id;
+        led.style.position = "absolute";
+        led.style.top = top;
+        led.style.left = left;
+        led.style.width = "10px";
+        led.style.height = "10px";
+        led.style.borderRadius = "50%";
+        led.style.backgroundColor = "#444";
+        led.style.border = "1px solid #fff";
+        led.style.boxShadow = "inset 0 0 2px rgba(0,0,0,0.5)";
+        parent.appendChild(led);
+    }
+
     export function setLedState(ledId: string, state: boolean, isReverse: boolean = false) {
-        let board = pxsim.board();
-        if (board && (board as any).updateLedState) {
-            (board as any).updateLedState(ledId, state, isReverse);
+        let win = (pxsim as any).runtime ? (pxsim as any).runtime.window : null;
+        if (!win || !win.document) return;
+
+        let doc = win.document;
+        let led = doc.getElementById(ledId);
+        if (led) {
+            if (state) {
+                led.style.backgroundColor = isReverse ? "#FF3B30" : "#34C759";
+                led.style.boxShadow = isReverse ? "0 0 8px #FF3B30" : "0 0 8px #34C759";
+            } else {
+                led.style.backgroundColor = "#444";
+                led.style.boxShadow = "inset 0 0 2px rgba(0,0,0,0.5)";
+            }
         }
     }
 }
