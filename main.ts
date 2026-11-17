@@ -282,16 +282,12 @@ namespace motor {
         }
 
         // Mise à jour visuelle sécurisée pour le simulateur
-        if (typeof pxsim !== "undefined") {
+        control.runInBackground(() => {
             let fwd = speed > 0;
             let rev = speed < 0;
-            // Appel via l'espace global du simulateur
-            let boardSim = (pxsim as any).board;
-            if (boardSim && boardSim.setLedState) {
-                boardSim.setLedState("led_m" + index + "_fwd", fwd, false);
-                boardSim.setLedState("led_m" + index + "_rev", rev, true);
-            }
-    }
+            console.log("Moteur " + index + " vitesse: " + speed);
+        });
+    } // <-- Accolade fermante de la fonction MotorRun ajoutée ici
 
     /**
      * Execute a 42BYGH1861A-C step motor(Degree).
@@ -498,12 +494,6 @@ namespace motor {
     export function motorStop(index: Motors) {
         setPwm((4 - index) * 2, 0, 0);
         setPwm((4 - index) * 2 + 1, 0, 0);
-
-        // Éteindre les deux voyants DEL du moteur dans le simulateur graphique
-        if (typeof pxsim !== "undefined" && (pxsim as any).board) {
-            (pxsim as any).board.setLedState("led_m" + index + "_fwd", false);
-            (pxsim as any).board.setLedState("led_m" + index + "_rev", false);
-        }
     }
 
     /**
@@ -517,4 +507,4 @@ namespace motor {
             motorStop(idx);
         }
     }
-}
+} // <-- Accolade fermante du namespace motor ajoutée ici
