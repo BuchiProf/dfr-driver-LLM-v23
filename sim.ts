@@ -1,7 +1,8 @@
 namespace pxsim.board {
     
     function autoInit() {
-        let win = (window as any) || ((pxsim as any).runtime ? (pxsim as any).runtime.window : null);
+        let runtimeObj = (pxsim as any).runtime;
+        let win = runtimeObj ? runtimeObj.window : null;
         let doc = win ? win.document : null;
         
         if (!doc) {
@@ -10,7 +11,7 @@ namespace pxsim.board {
 
         let simContainer = doc.getElementById("sidediv") || doc.querySelector(".simPane");
         if (!simContainer) {
-            if (win.setTimeout) {
+            if (win && win.setTimeout) {
                 win.setTimeout(() => autoInit(), 500);
             }
             return;
@@ -20,7 +21,8 @@ namespace pxsim.board {
     }
 
     export function initSimVisuals() {
-        let win = (window as any) || ((pxsim as any).runtime ? (pxsim as any).runtime.window : null);
+        let runtimeObj = (pxsim as any).runtime;
+        let win = runtimeObj ? runtimeObj.window : null;
         let doc = win ? win.document : null;
         if (!doc) return;
 
@@ -71,14 +73,16 @@ namespace pxsim.board {
         led.style.width = "10px";
         led.style.height = "10px";
         led.style.borderRadius = "50%";
-        led.style.backgroundColor = "#444"; // Gris éteint par défaut
+        let bg = "#444"; // Gris éteint par défaut
+        led.style.backgroundColor = bg;
         led.style.border = "1px solid #fff";
         led.style.boxShadow = "inset 0 0 2px rgba(0,0,0,0.5)";
         parent.appendChild(led);
     }
 
     export function setLedState(ledId: string, state: boolean, isReverse: boolean = false) {
-        let win = (window as any) || ((pxsim as any).runtime ? (pxsim as any).runtime.window : null);
+        let runtimeObj = (pxsim as any).runtime;
+        let win = runtimeObj ? runtimeObj.window : null;
         let doc = win ? win.document : null;
         if (!doc) return;
 
