@@ -9,6 +9,7 @@
     "files": [
         "README.md",
         "main.ts",
+        "icon.png",
         "_locales/fr/motor-strings.json"
     ],
     "testFiles": [
