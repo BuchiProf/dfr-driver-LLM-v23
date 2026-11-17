@@ -1,6 +1,6 @@
 {
     "name": "Carte moteur",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "La carte moteur DFROBOT pour microbit.",
     "license": "GNU",
     "dependencies": {
