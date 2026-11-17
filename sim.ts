@@ -1,9 +1,10 @@
 namespace pxsim.board {
     
     function autoInit() {
-        let runtimeObj = (pxsim as any).runtime;
-        let win = runtimeObj ? runtimeObj.window : null;
-        let doc = win ? win.document : null;
+        // Utilisation d'un accès sécurisé au runtime sans cibler directement pxsim globalement
+        let boardRuntime = (globalThis as any).pxsim || (window as any).pxsim;
+        let win = boardRuntime && boardRuntime.runtime ? boardRuntime.runtime.window : null;
+        let doc = win ? win.document : (typeof document !== "undefined" ? document : null);
         
         if (!doc) {
             return;
@@ -21,9 +22,9 @@ namespace pxsim.board {
     }
 
     export function initSimVisuals() {
-        let runtimeObj = (pxsim as any).runtime;
-        let win = runtimeObj ? runtimeObj.window : null;
-        let doc = win ? win.document : null;
+        let boardRuntime = (globalThis as any).pxsim || (window as any).pxsim;
+        let win = boardRuntime && boardRuntime.runtime ? boardRuntime.runtime.window : null;
+        let doc = win ? win.document : (typeof document !== "undefined" ? document : null);
         if (!doc) return;
 
         let simContainer = doc.getElementById("sidediv") || doc.querySelector(".simPane");
@@ -73,17 +74,16 @@ namespace pxsim.board {
         led.style.width = "10px";
         led.style.height = "10px";
         led.style.borderRadius = "50%";
-        let bg = "#444"; // Gris éteint par défaut
-        led.style.backgroundColor = bg;
+        led.style.backgroundColor = "#444"; // Gris éteint par défaut
         led.style.border = "1px solid #fff";
         led.style.boxShadow = "inset 0 0 2px rgba(0,0,0,0.5)";
         parent.appendChild(led);
     }
 
     export function setLedState(ledId: string, state: boolean, isReverse: boolean = false) {
-        let runtimeObj = (pxsim as any).runtime;
-        let win = runtimeObj ? runtimeObj.window : null;
-        let doc = win ? win.document : null;
+        let boardRuntime = (globalThis as any).pxsim || (window as any).pxsim;
+        let win = boardRuntime && boardRuntime.runtime ? boardRuntime.runtime.window : null;
+        let doc = win ? win.document : (typeof document !== "undefined" ? document : null);
         if (!doc) return;
 
         let led = doc.getElementById(ledId);
