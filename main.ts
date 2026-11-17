@@ -9,8 +9,8 @@
  * @copyright    GNU Lesser General Public License
  *
  * @author [email](1035868977@qq.com)
- * @version    V1.0.2
- * @date   2018-03-20
+ * @version    V2.0.2
+ * @date    2018-03-20
  */
 
 /**
@@ -280,6 +280,14 @@ namespace motor {
             setPwm(pp, 0, 0)
             setPwm(pn, 0, -speed)
         }
+
+        // Mise à jour des voyants DEL dans le simulateur graphique (si disponible)
+        if (typeof pxsim !== "undefined" && (pxsim as any).board) {
+            let fwd = speed > 0;
+            let rev = speed < 0;
+            (pxsim as any).board.setLedState("led_m" + index + "_fwd", fwd);
+            (pxsim as any).board.setLedState("led_m" + index + "_rev", rev);
+        }
     }
 
     /**
@@ -487,6 +495,12 @@ namespace motor {
     export function motorStop(index: Motors) {
         setPwm((4 - index) * 2, 0, 0);
         setPwm((4 - index) * 2 + 1, 0, 0);
+
+        // Éteindre les deux voyants DEL du moteur dans le simulateur graphique
+        if (typeof pxsim !== "undefined" && (pxsim as any).board) {
+            (pxsim as any).board.setLedState("led_m" + index + "_fwd", false);
+            (pxsim as any).board.setLedState("led_m" + index + "_rev", false);
+        }
     }
 
     /**
@@ -494,6 +508,7 @@ namespace motor {
      */
     //% weight=10
     //% blockId=motor_motorStopAll block="Arrêter tous les moteurs"
+    //% advanced=true
     export function motorStopAll(): void {
         for (let idx = 1; idx <= 4; idx++) {
             motorStop(idx);
