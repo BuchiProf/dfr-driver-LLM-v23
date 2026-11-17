@@ -1,30 +1,13 @@
+// Déclaration pour que le compilateur accepte pxsim sans broncher
+declare const pxsim: any;
+
 namespace pxsim.board {
-    
-    function autoInit() {
-        // Utilisation d'un accès sécurisé au runtime sans cibler directement pxsim globalement
-        let boardRuntime = (globalThis as any).pxsim || (window as any).pxsim;
-        let win = boardRuntime && boardRuntime.runtime ? boardRuntime.runtime.window : null;
-        let doc = win ? win.document : (typeof document !== "undefined" ? document : null);
-        
-        if (!doc) {
-            return;
-        }
-
-        let simContainer = doc.getElementById("sidediv") || doc.querySelector(".simPane");
-        if (!simContainer) {
-            if (win && win.setTimeout) {
-                win.setTimeout(() => autoInit(), 500);
-            }
-            return;
-        }
-
-        initSimVisuals();
-    }
 
     export function initSimVisuals() {
-        let boardRuntime = (globalThis as any).pxsim || (window as any).pxsim;
-        let win = boardRuntime && boardRuntime.runtime ? boardRuntime.runtime.window : null;
-        let doc = win ? win.document : (typeof document !== "undefined" ? document : null);
+        // Accès direct et sécurisé au DOM via le runtime du board si disponible
+        let boardInstance = pxsim.board && pxsim.board.id ? pxsim.board.id : null;
+        // On récupère le document du navigateur de manière propre
+        let doc = (typeof document !== "undefined") ? document : null;
         if (!doc) return;
 
         let simContainer = doc.getElementById("sidediv") || doc.querySelector(".simPane");
@@ -81,9 +64,7 @@ namespace pxsim.board {
     }
 
     export function setLedState(ledId: string, state: boolean, isReverse: boolean = false) {
-        let boardRuntime = (globalThis as any).pxsim || (window as any).pxsim;
-        let win = boardRuntime && boardRuntime.runtime ? boardRuntime.runtime.window : null;
-        let doc = win ? win.document : (typeof document !== "undefined" ? document : null);
+        let doc = (typeof document !== "undefined") ? document : null;
         if (!doc) return;
 
         let led = doc.getElementById(ledId);
@@ -99,6 +80,9 @@ namespace pxsim.board {
         }
     }
 
-    // Lancement automatique au chargement
-    autoInit();
+    // Initialisation automatique différée gérée proprement par MakeCode
+    control.runInBackground(() => {
+        basic.pause(1000);
+        initSimVisuals();
+    });
 }
