@@ -1,1 +1,14 @@
-
+{
+  "motor.Dir.CW|block": "Sens horaire",
+  "motor.Dir.CCW|block": "Sens antihoraire",
+  "motor.servo|block": "Servomoteur|%index|angle|%degree",
+  "motor.MotorRun|block": "Moteur|%index|sens|%Dir|vitesse|%speed",
+  "motor.stepperDegree_42|block": "Pas à pas 42|%index|sens|%direction|angle|%degree",
+  "motor.stepperTurn_42|block": "Pas à pas 42|%index|sens|%direction|tours|%turn",
+  "motor.stepperDegree_28|block": "Pas à pas 28|%index|sens|%direction|angle|%degree",
+  "motor.stepperTurn_28|block": "Pas à pas 28|%index|sens|%direction|tours|%turn",
+  "motor.stepperDegreeDual_42|block": "Double pas à pas %stepper|M1_M2 sens %direction1|angle %degree1|M3_M4 sens %direction2|angle %degree2",
+  "motor.stepperTurnDual_42|block": "Double pas à pas %stepper|M1_M2 sens %direction1|tours %trun1|M3_M4 sens %direction2|tours %trun2",
+  "motor.motorStop|block": "Arrêter le moteur|%index",
+  "motor.motorStopAll|block": "Arrêter tous les moteurs"
+}
