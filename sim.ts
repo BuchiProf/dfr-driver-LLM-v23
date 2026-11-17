@@ -1,8 +1,9 @@
 namespace pxsim.board {
     export function initSimVisuals() {
-        // Accès sécurisé au document du navigateur via le contexte d'exécution MakeCode
-        let win = (pxsim as any).runtime ? (pxsim as any).runtime.window : null;
-        let doc = win ? win.document : (typeof document !== "undefined" ? document : null);
+        // Récupération sécurisée sans utiliser le mot-clé global 'document' ni 'window'
+        let runtimeObj = (pxsim as any).runtime;
+        let win = runtimeObj ? runtimeObj.window : null;
+        let doc = win ? win.document : null;
         if (!doc) return;
 
         let simContainer = doc.getElementById("sidediv");
@@ -58,8 +59,9 @@ namespace pxsim.board {
     }
 
     export function setLedState(ledId: string, state: boolean, isReverse: boolean = false) {
-        let win = (pxsim as any).runtime ? (pxsim as any).runtime.window : null;
-        let doc = win ? win.document : (typeof document !== "undefined" ? document : null);
+        let runtimeObj = (pxsim as any).runtime;
+        let win = runtimeObj ? runtimeObj.window : null;
+        let doc = win ? win.document : null;
         if (!doc) return;
 
         let led = doc.getElementById(ledId);
