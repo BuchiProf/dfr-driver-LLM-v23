@@ -13,8 +13,6 @@
  * @date    2018-03-20
  */
 
-declare const pxsim: any;
-
 /**
  *This is DFRobot:motor user motor and steering control function.
  */
@@ -277,7 +275,7 @@ namespace motor {
             setPwm(pn, 0, -speed)
         }
 
-        // Mise à jour visuelle sécurisée pour le simulateur
+        // Mise à jour visuelle sécurisée pour le simulateur sans redéclarer pxsim
         if (typeof pxsim !== "undefined" && (pxsim as any).board && (pxsim as any).board.setLedState) {
             let fwd = speed > 0;
             let rev = speed < 0;
